@@ -8,12 +8,11 @@ document.addEventListener('DOMContentLoaded', function() {
   camera.position.x = 300; 
   camera.position.y = -276;
   
-  // LOWERING THIS NUMBER ZOOMED THE CAMERA IN, MAKING THE HEART BIGGER
-  camera.position.z = 280; 
+  // THIS NUMBER IS LOWERED TO ZOOM IN MUCH CLOSER
+  camera.position.z = 150; 
 
   const renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
   
-  // Updated to match the new CSS container size
   renderer.setSize(380, 380);
   container.appendChild(renderer.domElement);
 
