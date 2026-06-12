@@ -4,16 +4,19 @@ document.addEventListener('DOMContentLoaded', function() {
   const scene = new THREE.Scene();
   const camera = new THREE.PerspectiveCamera(75, 1, 0.1, 1000);
   
-  // Center the camera on the SVG path coordinates from your code
+  // Center the camera on the SVG path coordinates
   camera.position.x = 300; 
   camera.position.y = -276;
-  camera.position.z = 400; 
+  
+  // LOWERING THIS NUMBER ZOOMED THE CAMERA IN, MAKING THE HEART BIGGER
+  camera.position.z = 280; 
 
   const renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
-  renderer.setSize(320, 320);
+  
+  // Updated to match the new CSS container size
+  renderer.setSize(380, 380);
   container.appendChild(renderer.domElement);
 
-  // Your image logic starts here
   const path = document.querySelector("path");
   const length = path.getTotalLength();
   const vertices = [];
@@ -21,7 +24,6 @@ document.addEventListener('DOMContentLoaded', function() {
 
   const geometry = new THREE.BufferGeometry();
 
-  // Using 0.5 instead of 0.1 to keep performance smooth on mobile
   for (let i = 0; i < length; i += 0.5) {
     const point = path.getPointAtLength(i);
     const vector = new THREE.Vector3(point.x, -point.y, 0);
@@ -41,11 +43,9 @@ document.addEventListener('DOMContentLoaded', function() {
     }, i * 0.002);
   }
 
-  // Assign the generated points to the Three.js geometry
   const positions = new Float32Array(vertices.length * 3);
   geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
 
-  // Style the particles
   const material = new THREE.PointsMaterial({ color: 0xff4d4d, size: 2 });
   const particles = new THREE.Points(geometry, material);
   scene.add(particles);
@@ -53,7 +53,6 @@ document.addEventListener('DOMContentLoaded', function() {
   const animate = function() {
     requestAnimationFrame(animate);
 
-    // Sync the 3D particles with the ongoing GSAP animation
     const positionsAttribute = geometry.attributes.position;
     for (let i = 0; i < vertices.length; i++) {
       positionsAttribute.setXYZ(i, vertices[i].x, vertices[i].y, vertices[i].z);
