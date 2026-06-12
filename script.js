@@ -1,18 +1,34 @@
-const path = document.querySelector("path");
-const length = path.getTotalLength();
-const vertices = [];
-for (let i = 0; i < length; i += 0.1) {
-  const point = path.getPointAtLength(i);
-  const vector = new THREE.Vector3(point.x, -point.y, 0);
-  vector.x += (Math.random() - 0.5) * 30;
-  vector.y += (Math.random() - 0.5) * 30;
-  vector.z += (Math.random() - 0.5) * 70;
-  vertices.push(vector);
-  tl.from(vector, {
-    x: 600 / 2,
-    y: -552 / 2,
-    z: 0,
-    ease: "power2. inOut",
-    duration: "random(2, 5)"
-  });
-}
+document.addEventListener('DOMContentLoaded', function() {
+  const container = document.getElementById('animation-container');
+
+  // 1. Set up the Scene and Camera
+  const scene = new THREE.Scene();
+  const camera = new THREE.PerspectiveCamera(75, 1, 0.1, 1000);
+  camera.position.z = 250;
+
+  // 2. Set up the Renderer
+  const renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
+  renderer.setSize(300, 300);
+  container.appendChild(renderer.domElement);
+
+  // 3. Create the 3D Object
+  const geometry = new THREE.BoxGeometry(120, 120, 120);
+  // MeshNormalMaterial creates a nice colorful effect as it rotates
+  const material = new THREE.MeshNormalMaterial(); 
+  const mesh = new THREE.Mesh(geometry, material);
+  
+  scene.add(mesh);
+
+  // 4. Animation Loop
+  const animate = function() {
+    requestAnimationFrame(animate);
+    
+    // Rotate the object
+    mesh.rotation.x += 0.01;
+    mesh.rotation.y += 0.02;
+    
+    renderer.render(scene, camera);
+  };
+
+  animate();
+});
