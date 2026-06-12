@@ -16,26 +16,30 @@ document.addEventListener('DOMContentLoaded', function() {
   const path = document.querySelector("path");
   const length = path.getTotalLength();
   const vertices = [];
-  const tl = gsap.timeline();
+  
+  // THIS IS THE MAGIC FOR THE LOOP: repeat: -1 loops forever, yoyo: true makes it reverse
+  const tl = gsap.timeline({ repeat: -1, yoyo: true, repeatDelay: 0.8 });
   const geometry = new THREE.BufferGeometry();
 
   for (let i = 0; i < length; i += 0.5) {
     const point = path.getPointAtLength(i);
     const vector = new THREE.Vector3(point.x, -point.y, 0);
     
+    // Keeps the fuzzy particle look
     vector.x += (Math.random() - 0.5) * 30;
     vector.y += (Math.random() - 0.5) * 30;
     vector.z += (Math.random() - 0.5) * 70;
     
     vertices.push(vector);
 
+    // This creates the sequential "drawing" effect
     tl.from(vector, {
-      x: 600 / 2,
-      y: -552 / 2,
+      x: 300,
+      y: -276,
       z: 0,
-      ease: "power2.inOut",
-      duration: gsap.utils.random(2, 5)
-    }, i * 0.002);
+      ease: "power2.out",
+      duration: 1.5 + Math.random() * 0.5 // Slight random duration makes the trail look natural
+    }, i * 0.0035); // This multiplier controls how fast the "wand" traces the heart
   }
 
   const positions = new Float32Array(vertices.length * 3);
@@ -60,13 +64,11 @@ document.addEventListener('DOMContentLoaded', function() {
   const sparkles = new THREE.Points(sparkleGeo, sparkleMat);
   scene.add(sparkles);
 
-  // === INTERACTIVE TOUCH SETUP ===
   const mouse = new THREE.Vector2(-9999, -9999);
   const raycaster = new THREE.Raycaster();
   const plane = new THREE.Plane(new THREE.Vector3(0, 0, 1), 0);
   const mouse3D = new THREE.Vector3(-9999, -9999, 0);
 
-  // Tracks finger/mouse movement across the screen
   window.addEventListener('pointermove', (event) => {
     mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
     mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
@@ -74,22 +76,17 @@ document.addEventListener('DOMContentLoaded', function() {
     raycaster.ray.intersectPlane(plane, mouse3D);
   });
 
-  // Resets when finger leaves the screen
   window.addEventListener('pointerout', () => {
     mouse3D.set(-9999, -9999, 0);
   });
-  // ===============================
 
   const animate = function() {
     requestAnimationFrame(animate);
     
-    // === DYNAMIC COLOR SHIFTING ===
     const time = Date.now() * 0.0005;
-    // Shifts smoothly between pinks, reds, and romantic oranges
     const hue = 0.95 + Math.sin(time) * 0.1;
     material.color.setHSL(hue % 1.0, 1.0, 0.6);
     sparkleMat.color.setHSL((hue + 0.1) % 1.0, 0.8, 0.8);
-    // ==============================
 
     const positionsAttribute = geometry.attributes.position;
     for (let i = 0; i < vertices.length; i++) {
@@ -98,19 +95,16 @@ document.addEventListener('DOMContentLoaded', function() {
       let targetY = v.y;
       let targetZ = v.z;
 
-      // === INTERACTIVE SCATTERING MATH ===
       const dx = v.x - mouse3D.x;
       const dy = v.y - mouse3D.y;
       const dist = Math.sqrt(dx * dx + dy * dy);
 
-      // If finger is within 90 pixels of a particle, push it away
       if (dist < 90) {
         const force = (90 - dist) / 90; 
         targetX += (dx / dist) * force * 50; 
         targetY += (dy / dist) * force * 50;
-        targetZ += force * 50; // Pop out toward the camera
+        targetZ += force * 50; 
       }
-      // ===================================
 
       positionsAttribute.setXYZ(i, targetX, targetY, targetZ);
     }
