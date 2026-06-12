@@ -1,14 +1,42 @@
+body {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  margin: 0;
+  background-color: #ffe6e6; /* Soft pink background */
+  font-family: sans-serif;
+}
+
 .animation-container {
-  width: 200px;
-  height: 200px;
+  width: 300px;
+  height: 300px;
+  position: relative;
   background-color: #fff;
   border-radius: 50%;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
 }
 
 .text-message {
-  font-size: 24px;
+  font-size: 32px;
   font-weight: bold;
-  color: #333;
+  color: #ff4d4d;
   text-align: center;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 10; 
+  pointer-events: none; /* Lets you interact with the 3D object behind the text */
+}
+
+/* Makes sure the 3D canvas fits inside the circle */
+canvas {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 1;
 }
