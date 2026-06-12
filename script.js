@@ -1,32 +1,65 @@
 document.addEventListener('DOMContentLoaded', function() {
   const container = document.getElementById('animation-container');
 
-  // 1. Set up the Scene and Camera
   const scene = new THREE.Scene();
   const camera = new THREE.PerspectiveCamera(75, 1, 0.1, 1000);
-  camera.position.z = 250;
+  
+  // Center the camera on the SVG path coordinates from your code
+  camera.position.x = 300; 
+  camera.position.y = -276;
+  camera.position.z = 400; 
 
-  // 2. Set up the Renderer
   const renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
-  renderer.setSize(300, 300);
+  renderer.setSize(320, 320);
   container.appendChild(renderer.domElement);
 
-  // 3. Create the 3D Object
-  const geometry = new THREE.BoxGeometry(120, 120, 120);
-  // MeshNormalMaterial creates a nice colorful effect as it rotates
-  const material = new THREE.MeshNormalMaterial(); 
-  const mesh = new THREE.Mesh(geometry, material);
-  
-  scene.add(mesh);
+  // Your image logic starts here
+  const path = document.querySelector("path");
+  const length = path.getTotalLength();
+  const vertices = [];
+  const tl = gsap.timeline();
 
-  // 4. Animation Loop
+  const geometry = new THREE.BufferGeometry();
+
+  // Using 0.5 instead of 0.1 to keep performance smooth on mobile
+  for (let i = 0; i < length; i += 0.5) {
+    const point = path.getPointAtLength(i);
+    const vector = new THREE.Vector3(point.x, -point.y, 0);
+    
+    vector.x += (Math.random() - 0.5) * 30;
+    vector.y += (Math.random() - 0.5) * 30;
+    vector.z += (Math.random() - 0.5) * 70;
+    
+    vertices.push(vector);
+
+    tl.from(vector, {
+      x: 600 / 2,
+      y: -552 / 2,
+      z: 0,
+      ease: "power2.inOut",
+      duration: gsap.utils.random(2, 5)
+    }, i * 0.002);
+  }
+
+  // Assign the generated points to the Three.js geometry
+  const positions = new Float32Array(vertices.length * 3);
+  geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+
+  // Style the particles
+  const material = new THREE.PointsMaterial({ color: 0xff4d4d, size: 2 });
+  const particles = new THREE.Points(geometry, material);
+  scene.add(particles);
+
   const animate = function() {
     requestAnimationFrame(animate);
-    
-    // Rotate the object
-    mesh.rotation.x += 0.01;
-    mesh.rotation.y += 0.02;
-    
+
+    // Sync the 3D particles with the ongoing GSAP animation
+    const positionsAttribute = geometry.attributes.position;
+    for (let i = 0; i < vertices.length; i++) {
+      positionsAttribute.setXYZ(i, vertices[i].x, vertices[i].y, vertices[i].z);
+    }
+    positionsAttribute.needsUpdate = true;
+
     renderer.render(scene, camera);
   };
 
