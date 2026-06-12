@@ -4,13 +4,13 @@ body {
   align-items: center;
   height: 100vh;
   margin: 0;
-  background-color: #1a1a1a; /* Dark background makes particles pop */
+  background-color: #1a1a1a;
   font-family: sans-serif;
 }
 
 .animation-container {
-  width: 320px;
-  height: 320px;
+  width: 380px; 
+  height: 380px;
   position: relative;
   background-color: #262626;
   border-radius: 50%;
@@ -19,7 +19,8 @@ body {
 }
 
 .text-message {
-  font-size: 32px;
+  font-size: 26px; 
+  line-height: 1.3; 
   font-weight: bold;
   color: #ff4d4d;
   text-align: center;
