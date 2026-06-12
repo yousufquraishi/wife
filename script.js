@@ -2,18 +2,21 @@ document.addEventListener('DOMContentLoaded', function() {
   const container = document.getElementById('animation-container');
 
   const scene = new THREE.Scene();
-  const camera = new THREE.PerspectiveCamera(75, 1, 0.1, 1000);
   
-  // Center the camera on the SVG path coordinates
+  // Adjusted for a full-screen display
+  const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+  
   camera.position.x = 300; 
   camera.position.y = -276;
   
-  // THIS NUMBER IS LOWERED TO ZOOM IN MUCH CLOSER
-  camera.position.z = 150; 
+  // Z is increased because it now needs to fit the heart into a full phone screen
+  camera.position.z = 500; 
+  camera.lookAt(300, -276, 0);
 
   const renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
   
-  renderer.setSize(380, 380);
+  // Make the 3D space fill the entire window
+  renderer.setSize(window.innerWidth, window.innerHeight);
   container.appendChild(renderer.domElement);
 
   const path = document.querySelector("path");
@@ -49,6 +52,24 @@ document.addEventListener('DOMContentLoaded', function() {
   const particles = new THREE.Points(geometry, material);
   scene.add(particles);
 
+  // === NEW SPARKLES CODE ===
+  const sparkleGeo = new THREE.BufferGeometry();
+  const sparkleCount = 300;
+  const sparklePositions = new Float32Array(sparkleCount * 3);
+  
+  // Scatter the sparkles randomly around the background
+  for (let i = 0; i < sparkleCount * 3; i += 3) {
+    sparklePositions[i] = 300 + (Math.random() - 0.5) * 1000;     // x
+    sparklePositions[i+1] = -276 + (Math.random() - 0.5) * 1000;  // y
+    sparklePositions[i+2] = (Math.random() - 0.5) * 400 - 100;    // z
+  }
+  
+  sparkleGeo.setAttribute('position', new THREE.BufferAttribute(sparklePositions, 3));
+  const sparkleMat = new THREE.PointsMaterial({ color: 0xffffff, size: 1.5, transparent: true, opacity: 0.6 });
+  const sparkles = new THREE.Points(sparkleGeo, sparkleMat);
+  scene.add(sparkles);
+  // =========================
+
   const animate = function() {
     requestAnimationFrame(animate);
 
@@ -58,8 +79,21 @@ document.addEventListener('DOMContentLoaded', function() {
     }
     positionsAttribute.needsUpdate = true;
 
+    // Slowly float the sparkles upwards
+    sparkles.position.y += 0.3;
+    if(sparkles.position.y > 600) {
+      sparkles.position.y = -400;
+    }
+
     renderer.render(scene, camera);
   };
 
   animate();
+  
+  // Keeps the canvas perfectly sized if the phone is rotated
+  window.addEventListener('resize', () => {
+    camera.aspect = window.innerWidth / window.innerHeight;
+    camera.updateProjectionMatrix();
+    renderer.setSize(window.innerWidth, window.innerHeight);
+  });
 });
