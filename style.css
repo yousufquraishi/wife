@@ -17,6 +17,15 @@ body {
   left: 0;
 }
 
+/* Creates a realistic double-beat heart pulse */
+@keyframes heartbeat {
+  0%, 100% { transform: translate(-50%, -50%) scale(1); }
+  15% { transform: translate(-50%, -50%) scale(1.08); }
+  30% { transform: translate(-50%, -50%) scale(1); }
+  45% { transform: translate(-50%, -50%) scale(1.08); }
+  60% { transform: translate(-50%, -50%) scale(1); }
+}
+
 .text-message {
   font-size: 26px;
   line-height: 1.3;
@@ -24,15 +33,15 @@ body {
   color: #ffb3b3; 
   text-align: center;
   position: absolute;
-  
-  /* THIS IS THE MAGIC NUMBER: Changed from 50% to 38% to slide the text up */
   top: 38%; 
-  
   left: 50%;
   transform: translate(-50%, -50%);
   z-index: 10;
   pointer-events: none;
   text-shadow: 0 0 15px rgba(255, 77, 77, 0.8); 
+  
+  /* Applies the pulse animation */
+  animation: heartbeat 2s infinite;
 }
 
 canvas {
