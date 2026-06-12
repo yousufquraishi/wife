@@ -4,17 +4,17 @@ body {
   align-items: center;
   height: 100vh;
   margin: 0;
-  background-color: #ffe6e6; /* Soft pink background */
+  background-color: #1a1a1a; /* Dark background makes particles pop */
   font-family: sans-serif;
 }
 
 .animation-container {
-  width: 300px;
-  height: 300px;
+  width: 320px;
+  height: 320px;
   position: relative;
-  background-color: #fff;
+  background-color: #262626;
   border-radius: 50%;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
   overflow: hidden;
 }
 
@@ -28,10 +28,9 @@ body {
   left: 50%;
   transform: translate(-50%, -50%);
   z-index: 10; 
-  pointer-events: none; /* Lets you interact with the 3D object behind the text */
+  pointer-events: none;
 }
 
-/* Makes sure the 3D canvas fits inside the circle */
 canvas {
   position: absolute;
   top: 0;
